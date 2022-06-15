@@ -5,14 +5,12 @@ from enum import Enum
 from os import path
 from typing import Any, Dict, List, Tuple
 
+from ulauncher.api import Extension, ExtensionResult, ExtensionSmallResult
 from ulauncher.api.client.EventListener import EventListener
-from ulauncher.api.client.Extension import Extension
 from ulauncher.api.shared.action.DoNothingAction import DoNothingAction
 from ulauncher.api.shared.action.OpenAction import OpenAction
 from ulauncher.api.shared.action.RenderResultListAction import RenderResultListAction
 from ulauncher.api.shared.event import KeywordQueryEvent
-from ulauncher.api.shared.item.ExtensionResultItem import ExtensionResultItem
-from ulauncher.api.shared.item.ExtensionSmallResultItem import ExtensionSmallResultItem
 
 logger = logging.getLogger(__name__)
 
@@ -144,7 +142,7 @@ class KeywordQueryEventListener(EventListener):
     @staticmethod
     def no_op_result_items(msgs: List[str], icon: str = "icon") -> RenderResultListAction:
         def create_result_item(msg):
-            return ExtensionResultItem(
+            return ExtensionResult(
                 icon=f"images/{icon}.png",
                 name=msg,
                 on_enter=DoNothingAction(),
@@ -178,7 +176,7 @@ class KeywordQueryEventListener(EventListener):
             return self.no_op_result_items(["There was an error running this extension."], "error")
 
         def create_result_item(filename):
-            return ExtensionSmallResultItem(
+            return ExtensionSmallResult(
                 icon="images/sub-icon.png",
                 name=filename,
                 on_enter=OpenAction(filename),
