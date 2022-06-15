@@ -9,7 +9,6 @@ from ulauncher.api import Extension, ExtensionResult, ExtensionSmallResult
 from ulauncher.api.client.EventListener import EventListener
 from ulauncher.api.shared.action.DoNothingAction import DoNothingAction
 from ulauncher.api.shared.action.OpenAction import OpenAction
-from ulauncher.api.shared.action.RenderResultListAction import RenderResultListAction
 from ulauncher.api.shared.event import KeywordQueryEvent
 
 logger = logging.getLogger(__name__)
@@ -140,7 +139,7 @@ class KeywordQueryEventListener(EventListener):
         return dirname
 
     @staticmethod
-    def no_op_result_items(msgs: List[str], icon: str = "icon") -> RenderResultListAction:
+    def no_op_result_items(msgs: List[str], icon: str = "icon") -> List[ExtensionResult]:
         def create_result_item(msg):
             return ExtensionResult(
                 icon=f"images/{icon}.png",
@@ -148,12 +147,11 @@ class KeywordQueryEventListener(EventListener):
                 on_enter=DoNothingAction(),
             )
 
-        items = list(map(create_result_item, msgs))
-        return RenderResultListAction(items)
+        return list(map(create_result_item, msgs))
 
     def on_event(
         self, event: KeywordQueryEvent, extension: FuzzyFinderExtension
-    ) -> RenderResultListAction:
+    ) -> List[ExtensionResult]:
         bin_names, errors = extension.get_binaries()
         errors.extend(extension.check_preferences(extension.preferences))
         if errors:
@@ -183,8 +181,7 @@ class KeywordQueryEventListener(EventListener):
                 on_alt_enter=OpenAction(self.get_dirname(filename)),
             )
 
-        items = list(map(create_result_item, results))
-        return RenderResultListAction(items)
+        return list(map(create_result_item, results))
 
 
 if __name__ == "__main__":
