@@ -4,6 +4,7 @@
   "description": "Find files and directories in Ulauncher using fzf",
   "developer_name": "Hillary Chan",
   "icon": "images/icon.png",
+  "instructions": "This extensions needs <code>fzf</code> and <code>fd</code> (note that fd is called <code>fdfind</code> in some package managers).",
   "options": {
     "query_debounce": 0.5
   },
