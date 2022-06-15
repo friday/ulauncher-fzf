@@ -6,10 +6,9 @@ from os import path
 from typing import Any, Dict, List, Tuple
 
 from ulauncher.api import Extension, ExtensionResult, ExtensionSmallResult
-from ulauncher.api.client.EventListener import EventListener
 from ulauncher.api.shared.action.DoNothingAction import DoNothingAction
 from ulauncher.api.shared.action.OpenAction import OpenAction
-from ulauncher.api.shared.event import KeywordQueryEvent
+from ulauncher.api.shared.query import Query
 
 logger = logging.getLogger(__name__)
 
@@ -26,10 +25,6 @@ FuzzyFinderPreferences = Dict[str, Any]
 
 
 class FuzzyFinderExtension(Extension):
-    def __init__(self):
-        super().__init__()
-        self.subscribe(KeywordQueryEvent, KeywordQueryEventListener())
-
     @staticmethod
     def assign_bin_name(bin_names: BinNames, bin_cmd: str, testing_cmd: str) -> BinNames:
         try:
@@ -131,8 +126,6 @@ class FuzzyFinderExtension(Extension):
 
             return results
 
-
-class KeywordQueryEventListener(EventListener):
     @staticmethod
     def get_dirname(filename: str) -> str:
         dirname = filename if path.isdir(filename) else path.dirname(filename)
@@ -149,22 +142,19 @@ class KeywordQueryEventListener(EventListener):
 
         return list(map(create_result_item, msgs))
 
-    def on_event(
-        self, event: KeywordQueryEvent, extension: FuzzyFinderExtension
-    ) -> List[ExtensionResult]:
-        bin_names, errors = extension.get_binaries()
-        errors.extend(extension.check_preferences(extension.preferences))
+    def on_query_change(self, query: str, _) -> List[ExtensionResult]:
+        bin_names, errors = self.get_binaries()
+        errors.extend(self.check_preferences(self.preferences))
         if errors:
             return self.no_op_result_items(errors, "error")
 
-        query = event.get_argument()
         if not query:
             return self.no_op_result_items(["Enter your search criteria."])
 
-        preferences = extension.get_preferences(extension.preferences)
+        preferences = self.get_preferences(self.preferences)
 
         try:
-            results = extension.search(query, preferences, **bin_names)
+            results = self.search(query, preferences, **bin_names)
         except subprocess.CalledProcessError as error:
             failing_cmd = error.cmd[0]
             if failing_cmd == "fzf" and error.returncode == 1:
