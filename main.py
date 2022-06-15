@@ -48,13 +48,6 @@ class FuzzyFinderExtension(Extension):
         if ignore_file and not path.isfile(path.expanduser(ignore_file)):
             errors.append(f"Ignore file '{ignore_file}' is not a file.")
 
-        try:
-            result_limit = int(preferences["result_limit"])
-            if result_limit <= 0:
-                errors.append("Result limit must be greater than 0.")
-        except ValueError:
-            errors.append("Result limit must be an integer.")
-
         if not errors:
             logger.debug("User preferences validated")
 
@@ -64,6 +57,8 @@ class FuzzyFinderExtension(Extension):
     def get_preferences(input_preferences: ExtensionPreferences) -> FuzzyFinderPreferences:
         preferences: FuzzyFinderPreferences = {
             "search_type": SearchType(int(input_preferences["search_type"])),
+            # type casting for allow_hidden and result_limit is only needed to support
+            # preferences saved before the extension API v3 migration
             "allow_hidden": bool(int(input_preferences["allow_hidden"])),
             "result_limit": int(input_preferences["result_limit"]),
             "base_dir": path.expanduser(input_preferences["base_dir"]),

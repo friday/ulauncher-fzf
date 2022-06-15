@@ -38,27 +38,17 @@
     },
     {
       "id": "allow_hidden",
-      "type": "select",
+      "type": "checkbox",
       "name": "Allow hidden files and directories",
-      "description": "Set whether hidden files and directories should be included when searching.",
-      "default_value": 0,
-      "options": [
-        {
-          "text": "No",
-          "value": 0
-        },
-        {
-          "text": "Yes",
-          "value": 1
-        }
-      ]
+      "description": "Set whether hidden files and directories should be included when searching."
     },
     {
       "id": "result_limit",
-      "type": "input",
+      "type": "number",
       "name": "Result limit",
       "description": "Number of results that should be returned.",
-      "default_value": "15"
+      "min": 1,
+      "default_value": 15
     },
     {
       "id": "base_dir",
